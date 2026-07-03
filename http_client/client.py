@@ -11,6 +11,10 @@ import requests
 DEFAULT_TIMEOUT = 30
 
 
+class HttpClientError(Exception):
+    """Raised when a request fails. Wraps the underlying transport error."""
+
+
 class HttpClient:
     def __init__(self, base_url="", default_params=None, default_headers=None, timeout=DEFAULT_TIMEOUT):
         self.base_url = base_url.rstrip("/")
@@ -25,16 +29,19 @@ class HttpClient:
         return f"{self.base_url}/{path.lstrip('/')}"
 
     def _request(self, method, path, params=None, json=None, data=None, headers=None):
-        response = self.session.request(
-            method=method,
-            url=self._build_url(path),
-            params={**self.default_params, **(params or {})},
-            json=json,
-            data=data,
-            headers={**self.default_headers, **(headers or {})},
-            timeout=self.timeout,
-        )
-        response.raise_for_status()
+        try:
+            response = self.session.request(
+                method=method,
+                url=self._build_url(path),
+                params={**self.default_params, **(params or {})},
+                json=json,
+                data=data,
+                headers={**self.default_headers, **(headers or {})},
+                timeout=self.timeout,
+            )
+            response.raise_for_status()
+        except requests.exceptions.RequestException as error:
+            raise HttpClientError(str(error)) from error
         return response
 
     def get(self, path, params=None, headers=None):
