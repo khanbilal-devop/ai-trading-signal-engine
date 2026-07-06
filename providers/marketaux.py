@@ -3,7 +3,7 @@ from datetime import datetime
 from http_client import HttpClient, HttpClientError, MarketauxEndPoints
 
 from .base import NewsProvider
-from .normalize import make_id, to_iso_z
+from .helper import make_id, to_iso_z
 
 
 class MarketauxProvider(NewsProvider):
