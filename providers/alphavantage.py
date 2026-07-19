@@ -5,8 +5,12 @@ from http_client import HttpClient, HttpClientError, AlphaVantageEndPoints
 from .base import NewsProvider
 from .helper import make_id, to_iso_z
 
+RELEVANCE_THRESHOLD = 0.70  # Alpha Vantage relevance_score is 0.0–1.0
+
 
 class AlphaVantageProvider(NewsProvider):
+    
+    
     def __init__(self, api_key):
         self._api_key = api_key
         self._client = HttpClient()  # no base_url — Alpha Vantage uses one fixed URL per call
@@ -34,7 +38,8 @@ class AlphaVantageProvider(NewsProvider):
             print(f"⚠️  Failed to fetch Alpha Vantage news: {error}")
             articles = []
 
-        return [self._normalize(article, ticker) for article in articles]
+        normalize = [self._normalize(article, ticker) for article in articles ]
+        return [ article for article in normalize if article is not None]
 
     def _date_range(self):
         now = datetime.now(timezone.utc)
@@ -60,7 +65,12 @@ class AlphaVantageProvider(NewsProvider):
             }
             for t in article.get("ticker_sentiment", [])
             if t.get("ticker", "").upper() == ticker.upper()
+            and t.get("relevance_score") is not None
+            and float(t["relevance_score"])  >= RELEVANCE_THRESHOLD
         ]
+        
+        if not tickers:
+            return None
 
         return {
             "id": make_id(article.get("url")),
