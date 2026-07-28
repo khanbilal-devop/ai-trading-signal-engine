@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
+from .helper import aggregate_signals
 from .base import SentimentModel
 
 
@@ -45,36 +46,7 @@ class FinBertModel(SentimentModel):
                 "label": top_label,
                 "scores": scores,
             })
-        return results;
-    
-    # def score(self, texts: list[str]) -> list[dict[str, float]]:
-    #     # TOKENIZE the batch of texts -> tensors
-    #     inputs = self.tokenizer(
-    #     texts,
-    #     padding=True,
-    #     truncation=True,
-    #     max_length=512,
-    #     return_tensors="pt",
-    #     )
-        
-    # #  FORWARD PASS under torch.no_grad() -> logits
-    #     with torch.no_grad():
-    #         outputs = self.model(**inputs)
-    #     logits = outputs.logits
-        
-    #     # Then apply softmax to get prob districutiuon
-    #     probabilities = torch.softmax(logits, dim=-1)
-        
-    #     # Then return the label that scores the highest
-    #     id2label = self.model.config.id2label
-    #     distributions = [];
-    #     for row in probabilities:
-    #         distribution= {
-    #             id2label[i] : probability.item()
-    #             for i,probability in enumerate(row)
-    #         }
-    #         distribution.append(distribution)
-        
-    #     return distributions; 
-    
+
+        return aggregate_signals(results);
+
       
