@@ -20,7 +20,7 @@ class FinBertModel(SentimentModel):
         self.model.eval()
         return;
     
-    def score(self, articles: list[dict]) -> list[dict]:
+    def score(self, articles: list[dict]) -> dict:
     # 1. Pull texts out, preserving order (articles[i] <-> texts[i])
         texts = [article["text"] for article in articles]   
     # 2. TOKENIZE the batch

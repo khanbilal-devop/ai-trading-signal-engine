@@ -1,5 +1,5 @@
-from .finebert import FinBertModel;
+from .sentimentanalyzer import SentimentAnalyzer
 
 
-__all__ = ['FinBertModel']
+__all__ = ['SentimentAnalyzer']
 
