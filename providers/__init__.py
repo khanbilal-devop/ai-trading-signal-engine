@@ -1,13 +1,7 @@
-from .base import NewsProvider
-from .marketaux import MarketauxProvider
-from .alphavantage import AlphaVantageProvider
-from .finnhub import FinnhubProvider
 from .aggregator import NewsAggregator
+from .factory import create_default_aggregator
 
 __all__ = [
-    "NewsProvider",
-    "MarketauxProvider",
-    "AlphaVantageProvider",
-    "FinnhubProvider",
     "NewsAggregator",
+    "create_default_aggregator"
 ]

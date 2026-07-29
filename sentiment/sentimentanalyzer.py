@@ -1,4 +1,4 @@
-from .constants import *
+from .constants import FINEBERT
 from .finebert import FinBertModel
 
 class SentimentAnalyzer():

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
+from error import ProviderConfigError
 from http_client import HttpClient, HttpClientError, AlphaVantageEndPoints
 
 from .base import NewsProvider
@@ -17,7 +18,7 @@ class AlphaVantageProvider(NewsProvider):
 
     def fetch(self, ticker):
         if not self._api_key:
-            raise RuntimeError("ALPHAVANTAGE_API_KEY is not set. Add it to your .env file.")
+            raise ProviderConfigError("ALPHAVANTAGE_API_KEY is not set. Add it to your .env file.")
 
         time_from, time_to = self._date_range()
 

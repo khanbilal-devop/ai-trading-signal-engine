@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from error import ProviderConfigError
 from http_client import HttpClient, HttpClientError, MarketauxEndPoints
 
 from .base import NewsProvider
@@ -15,7 +16,7 @@ class MarketauxProvider(NewsProvider):
 
     def fetch(self, ticker):
         if not self._api_key:
-            raise RuntimeError("MARKETAUX_API_KEY is not set. Add it to your .env file.")
+            raise ProviderConfigError("MARKETAUX_API_KEY is not set. Add it to your .env file.")
 
         params = {
             "symbols": ticker,

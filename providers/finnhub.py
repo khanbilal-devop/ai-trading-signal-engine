@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
+from error import ProviderConfigError
 from http_client import HttpClient, HttpClientError, FinnhubEndPoints
 
 from .base import NewsProvider
@@ -13,7 +14,7 @@ class FinnhubProvider(NewsProvider):
 
     def fetch(self, ticker):
         if not self._api_key:
-            raise RuntimeError("FINNHUB_API_KEY is not set. Add it to your .env file.")
+            raise ProviderConfigError("FINNHUB_API_KEY is not set. Add it to your .env file.")
 
         date_from, date_to = self._date_range()
 
