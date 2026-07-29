@@ -11,10 +11,36 @@ automates news-based sentiment analysis and turns it into an at-a-glance signal.
 > ⚠️ **Not financial advice.** This is an educational / portfolio project.
 
 ## Status
-🚧 Actively in development — **Version 1** (off-the-shelf sentiment model + dashboard).
+🚧 Actively in development — **Version 1**.
+
+**Built so far:** multi-source news ingestion and a FinBERT sentiment pipeline that
+collapses article-level sentiment into a single **bullish / bearish / hold** signal.
+**Next:** wrap it in a FastAPI service, then dashboard and deployment.
 
 ## Planned stack
 Python · Hugging Face (FinBERT) · FastAPI · Streamlit · Docker
+
+## How it works
+The engine is a two-layer pipeline. The layers are decoupled and composed at the
+top (today in `main.py`, later in the FastAPI request handler), so each can be
+tested and reused independently.
+
+**1. News ingestion — `providers/`**
+Fetches recent news for a ticker from three sources — Marketaux, Alpha Vantage,
+and Finnhub — each behind a shared `NewsProvider` interface. Every provider
+normalizes its vendor's raw response into a common article shape, then
+`NewsAggregator` merges the sources and de-duplicates stories that appear across
+vendors (keeping the copy from the richer source). Marketaux and Alpha Vantage
+articles are filtered by a relevance threshold.
+
+**2. Sentiment intelligence — `sentiment/`**
+Scores the ingested articles with FinBERT. `FinBertModel` (behind a
+`SentimentModel` interface) loads the model once and scores a batch of article
+texts in a single forward pass, returning a positive / negative / neutral
+probability distribution per article. `aggregate_signals` then collapses those
+per-article distributions into one stock-level signal — **bullish / bearish /
+hold** — via a signed score (`P(positive) − P(negative)`) per article, a mean
+across them, and a neutral dead-band so weak or mixed sentiment resolves to hold.
 
 ## Roadmap
 - **v1** — Off-the-shelf sentiment model, news pipeline, dashboard, live deployment.
